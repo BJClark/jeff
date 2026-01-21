@@ -1,0 +1,11 @@
+# jeff project configuration
+project_name: "{project_name}"
+created: "{created}"
+
+# GitHub integration settings
+github:
+  # Labels to apply to generated issues
+  labels:
+    - "jeff"
+  # Prefix for issue titles
+  title_prefix: ""

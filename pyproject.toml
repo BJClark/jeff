@@ -1,0 +1,20 @@
+[project]
+name = "jeff"
+version = "0.1.0"
+description = "Specification CLI for Product Discovery - combining User Story Mapping, hypothesis-driven validation, and Opportunity Solution Trees"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.1.0",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+jeff = "jeff.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/jeff"]
