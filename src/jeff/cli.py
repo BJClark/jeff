@@ -8,6 +8,7 @@ from jeff.commands.opportunity import opportunity
 from jeff.commands.hypothesis import hypothesis
 from jeff.commands.research import research
 from jeff.commands.issues import issues
+from jeff.commands.bdd import bdd
 
 
 @click.group()
@@ -27,6 +28,7 @@ main.add_command(opportunity)
 main.add_command(hypothesis)
 main.add_command(research)
 main.add_command(issues)
+main.add_command(bdd)
 
 
 if __name__ == "__main__":

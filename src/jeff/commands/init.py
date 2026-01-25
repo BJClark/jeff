@@ -19,6 +19,7 @@ ARTIFACT_FILES = [
     "STORY_MAP.md",
     "OPPORTUNITIES.md",
     "HYPOTHESES.md",
+    "TASKS.md",
 ]
 
 RESEARCH_FILES = [
@@ -32,6 +33,7 @@ PROMPT_FILES = [
     "hypothesis.md",
     "opportunity.md",
     "issues.md",
+    "bdd.md",
 ]
 
 
