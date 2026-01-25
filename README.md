@@ -8,6 +8,78 @@ A CLI that generates specification artifacts combining User Story Mapping (Patto
 uv sync
 ```
 
+## AI Assistant Setup
+
+Jeff is designed to work with AI coding assistants. Each tool has its own configuration format for project context.
+
+### Claude Code
+
+Claude Code automatically reads `AGENTS.md` in the project root. No additional setup needed.
+
+```bash
+# Run jeff commands directly in Claude Code
+claude "Run jeff map and help me create a story map for my project"
+```
+
+### Cursor
+
+Create a `.cursorrules` file in your project root:
+
+```bash
+cp AGENTS.md .cursorrules
+```
+
+Or reference it in `.cursor/rules`:
+
+```
+Include @AGENTS.md for project context
+```
+
+### Zed
+
+Add to your `.zed/settings.json`:
+
+```json
+{
+  "assistant": {
+    "default_model": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-20250514"
+    },
+    "context_sources": ["AGENTS.md"]
+  }
+}
+```
+
+### Opencode
+
+Create an `opencode.md` file in your project root:
+
+```bash
+cp AGENTS.md opencode.md
+```
+
+Or configure in `opencode.json`:
+
+```json
+{
+  "context": ["AGENTS.md"]
+}
+```
+
+### Conductor
+
+Add Jeff context to your `conductor.yaml`:
+
+```yaml
+agents:
+  - name: jeff-assistant
+    context:
+      - AGENTS.md
+    tools:
+      - shell
+```
+
 ## Usage
 
 ```bash
