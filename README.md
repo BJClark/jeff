@@ -4,6 +4,22 @@ A CLI that generates specification artifacts combining User Story Mapping (Patto
 
 ## Installation
 
+### System-wide (recommended)
+
+```bash
+# Install from GitHub
+uv tool install git+https://github.com/BJClark/jeff.git
+
+# Or from a local clone
+uv tool install .
+```
+
+To update: `uv tool upgrade jeff`
+
+To uninstall: `uv tool uninstall jeff`
+
+### Development
+
 ```bash
 uv sync
 ```
@@ -79,6 +95,59 @@ agents:
     tools:
       - shell
 ```
+
+## Workflow
+
+Jeff guides you through a product discovery workflow. Each command generates a prompt—copy it to your AI assistant, get the response, and paste it into the corresponding artifact file.
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           PRODUCT DISCOVERY                             │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  1. INITIALIZE                                                          │
+│     jeff init                                                           │
+│     └── Creates .jeff/ directory with artifact templates                │
+│                                                                         │
+│  2. MAP THE USER JOURNEY                                                │
+│     jeff map                                                            │
+│     └── Build the story map: backbone → walking skeleton → ribs         │
+│         Output: .jeff/STORY_MAP.md                                      │
+│                                                                         │
+│  3. IDENTIFY OPPORTUNITIES                                              │
+│     jeff opportunity                                                    │
+│     └── Create Opportunity Solution Tree from research                  │
+│         outcome → opportunities → solutions → experiments               │
+│         Output: .jeff/OPPORTUNITIES.md                                  │
+│                                                                         │
+│  4. FORM HYPOTHESES                                                     │
+│     jeff hypothesis                                                     │
+│     └── Convert risky assumptions into testable hypotheses              │
+│         Output: .jeff/HYPOTHESES.md                                     │
+│                                                                         │
+│  5. CAPTURE RESEARCH (ongoing)                                          │
+│     jeff research interview    → Document user interviews               │
+│     jeff research insight      → Extract patterns into insights         │
+│         Output: .jeff/research/                                         │
+│                                                                         │
+│  6. GENERATE IMPLEMENTATION TASKS                                       │
+│     jeff issues                → GitHub issues from artifacts           │
+│     jeff bdd                   → BDD-style tasks with acceptance criteria│
+│         Output: .jeff/issues/ or .jeff/TASKS.md                         │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Typical Flow
+
+1. **Start a new project**: `jeff init --name "My Product"`
+2. **Define the user journey**: Run `jeff map`, work with AI to build your story map
+3. **Dig into opportunities**: Run `jeff opportunity` to create your OST
+4. **Identify risks**: Run `jeff hypothesis` to surface and plan validation for assumptions
+5. **Iterate**: As you do research, use `jeff research interview` and `jeff research insight` to capture learnings
+6. **Build**: When ready to implement, run `jeff issues` or `jeff bdd` to generate actionable tasks
+
+Each artifact builds on the previous ones—the story map informs opportunities, opportunities inform hypotheses, and all three feed into issue generation.
 
 ## Usage
 
