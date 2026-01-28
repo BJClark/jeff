@@ -9,6 +9,7 @@ from jeff.commands.hypothesis import hypothesis
 from jeff.commands.research import research
 from jeff.commands.issues import issues
 from jeff.commands.bdd import bdd
+from jeff.commands.install import install, uninstall
 
 
 @click.group()
@@ -29,6 +30,8 @@ main.add_command(hypothesis)
 main.add_command(research)
 main.add_command(issues)
 main.add_command(bdd)
+main.add_command(install)
+main.add_command(uninstall)
 
 
 if __name__ == "__main__":
