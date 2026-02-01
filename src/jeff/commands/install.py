@@ -14,9 +14,10 @@ from jeff.skills import SKILLS_DIR
 TOOLS = {
     "claude": {
         "name": "Claude Code",
-        "global_dir": Path.home() / ".claude" / "skills" / "jeff",
-        "local_dir": Path(".claude") / "skills" / "jeff",
+        "global_dir": Path.home() / ".claude" / "commands",
+        "local_dir": Path(".claude") / "commands",
         "supports_global": True,
+        "flatten": True,
     },
     "opencode": {
         "name": "Opencode",
