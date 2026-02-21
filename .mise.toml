@@ -1,0 +1,11 @@
+[tools]
+uv = "latest"
+python = "3.10"
+
+[tasks.install]
+description = "Install jeff as a uv tool"
+run = "uv tool install ."
+
+[tasks.dev]
+description = "Set up development environment"
+run = "uv sync"

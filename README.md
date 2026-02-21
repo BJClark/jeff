@@ -4,6 +4,21 @@ A CLI that generates specification artifacts combining User Story Mapping (Patto
 
 ## Installation
 
+### Prerequisites: uv
+
+Jeff uses [uv](https://docs.astral.sh/uv/) for installation. If you use [mise](https://mise.jdx.dev/), the included `.mise.toml` will manage `uv` and Python automatically:
+
+```bash
+mise trust
+mise install
+```
+
+Otherwise, install uv manually:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
 ### System-wide (recommended)
 
 ```bash
