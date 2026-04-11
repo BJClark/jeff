@@ -39,6 +39,23 @@ To uninstall: `uv tool uninstall jeff`
 uv sync
 ```
 
+### Dotfiles / scripted install
+
+If you manage your environment with a dotfiles repo, you can automate the install with a script like `.dotfiles/jeff/install.sh`:
+
+```bash
+#!/usr/bin/env bash
+set -e
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
+
+cd "$tmpdir"
+git clone https://github.com/BJClark/jeff.git
+cd jeff
+uv tool install .
+uv sync
+```
+
 ## AI Assistant Setup
 
 Jeff is designed to work with AI coding assistants. Each tool has its own configuration format for project context.
