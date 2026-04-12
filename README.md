@@ -1,119 +1,72 @@
-# jeff - Specification CLI for Product Discovery
+# jeff — Product Discovery Skills
 
-A CLI that generates specification artifacts combining User Story Mapping (Patton), hypothesis-driven validation (Klein), and Opportunity Solution Trees (Torres).
+A set of AI-assistant skills for product discovery, combining **User Story Mapping** (Patton), **Opportunity Solution Trees** (Torres), and **Hypothesis-Driven Development** (Klein).
+
+No Python dependency — jeff is a collection of skill files that plug directly into Claude Code, Cursor, or any AI assistant that reads markdown context.
 
 ## Installation
 
-### Prerequisites: uv
-
-Jeff uses [uv](https://docs.astral.sh/uv/) for installation. If you use [mise](https://mise.jdx.dev/), the included `.mise.toml` will manage `uv` and Python automatically:
+### Option 1: Claude Code Plugin (Recommended)
 
 ```bash
-mise trust
-mise install
+git clone https://github.com/BJClark/jeff ~/tools/jeff
+claude --plugin-dir ~/tools/jeff
 ```
 
-Otherwise, install uv manually:
+This loads jeff as a plugin — all `/jeff:*` commands are available immediately.
+
+### Option 2: Install Skills Globally into Claude Code
 
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
+git clone https://github.com/BJClark/jeff ~/tools/jeff
+cd ~/tools/jeff && ./install.sh --claude --global
 ```
 
-### System-wide (recommended)
+This copies skill files to `~/.claude/commands/` so they're available in every Claude Code session.
+
+### Option 3: Install into a Specific Project
 
 ```bash
-# Install from GitHub
-uv tool install git+https://github.com/BJClark/jeff.git
+# Claude Code (local to this project)
+~/tools/jeff/install.sh --claude --local
 
-# Or from a local clone
-uv tool install .
+# Cursor (local to this project)
+~/tools/jeff/install.sh --cursor --local
+
+# Both
+~/tools/jeff/install.sh --all --local
 ```
 
-To update: `uv tool upgrade jeff`
-
-To uninstall: `uv tool uninstall jeff`
-
-### Development
+### Option 4: Cursor System-Wide
 
 ```bash
-uv sync
+~/tools/jeff/install.sh --cursor --global
 ```
 
-## AI Assistant Setup
+This creates `~/.cursor/rules/jeff.mdc` so jeff context is available in every Cursor project.
 
-Jeff is designed to work with AI coding assistants. Each tool has its own configuration format for project context.
-
-### Claude Code
-
-Claude Code automatically reads `AGENTS.md` in the project root. No additional setup needed.
+### Uninstall
 
 ```bash
-# Run jeff commands directly in Claude Code
-claude "Run jeff map and help me create a story map for my project"
+./install.sh --uninstall --claude --global
+./install.sh --uninstall --cursor --global
 ```
 
-### Cursor
+## Slash Commands
 
-Create a `.cursorrules` file in your project root:
-
-```bash
-cp AGENTS.md .cursorrules
-```
-
-Or reference it in `.cursor/rules`:
-
-```
-Include @AGENTS.md for project context
-```
-
-### Zed
-
-Add to your `.zed/settings.json`:
-
-```json
-{
-  "assistant": {
-    "default_model": {
-      "provider": "anthropic",
-      "model": "claude-sonnet-4-20250514"
-    },
-    "context_sources": ["AGENTS.md"]
-  }
-}
-```
-
-### Opencode
-
-Create an `opencode.md` file in your project root:
-
-```bash
-cp AGENTS.md opencode.md
-```
-
-Or configure in `opencode.json`:
-
-```json
-{
-  "context": ["AGENTS.md"]
-}
-```
-
-### Conductor
-
-Add Jeff context to your `conductor.yaml`:
-
-```yaml
-agents:
-  - name: jeff-assistant
-    context:
-      - AGENTS.md
-    tools:
-      - shell
-```
+| Command | What it does |
+|---------|-------------|
+| `/jeff:init` | Scaffold `.jeff/` directory with artifact templates |
+| `/jeff:map` | Create or update the user story map (backbone, skeleton, ribs) |
+| `/jeff:opportunity` | Build an Opportunity Solution Tree |
+| `/jeff:hypothesis` | Create and track testable hypotheses |
+| `/jeff:research interview` | Capture a user interview |
+| `/jeff:research insight` | Synthesize insights across research |
+| `/jeff:bdd` | Generate BDD-style tasks with acceptance criteria |
+| `/jeff:issues` | Generate GitHub issues from artifacts |
+| `/jeff:help` | Show the command reference and workflow overview |
 
 ## Workflow
-
-Jeff guides you through a product discovery workflow. Each command generates a prompt—copy it to your AI assistant, get the response, and paste it into the corresponding artifact file.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -121,33 +74,33 @@ Jeff guides you through a product discovery workflow. Each command generates a p
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
 │  1. INITIALIZE                                                          │
-│     jeff init                                                           │
+│     /jeff:init                                                          │
 │     └── Creates .jeff/ directory with artifact templates                │
 │                                                                         │
 │  2. MAP THE USER JOURNEY                                                │
-│     jeff map                                                            │
+│     /jeff:map                                                           │
 │     └── Build the story map: backbone → walking skeleton → ribs         │
 │         Output: .jeff/STORY_MAP.md                                      │
 │                                                                         │
 │  3. IDENTIFY OPPORTUNITIES                                              │
-│     jeff opportunity                                                    │
+│     /jeff:opportunity                                                   │
 │     └── Create Opportunity Solution Tree from research                  │
 │         outcome → opportunities → solutions → experiments               │
 │         Output: .jeff/OPPORTUNITIES.md                                  │
 │                                                                         │
 │  4. FORM HYPOTHESES                                                     │
-│     jeff hypothesis                                                     │
+│     /jeff:hypothesis                                                    │
 │     └── Convert risky assumptions into testable hypotheses              │
 │         Output: .jeff/HYPOTHESES.md                                     │
 │                                                                         │
 │  5. CAPTURE RESEARCH (ongoing)                                          │
-│     jeff research interview    → Document user interviews               │
-│     jeff research insight      → Extract patterns into insights         │
+│     /jeff:research interview    → Document user interviews              │
+│     /jeff:research insight      → Extract patterns into insights        │
 │         Output: .jeff/research/                                         │
 │                                                                         │
 │  6. GENERATE IMPLEMENTATION TASKS                                       │
-│     jeff issues                → GitHub issues from artifacts           │
-│     jeff bdd                   → BDD-style tasks with acceptance criteria│
+│     /jeff:issues                → GitHub issues from artifacts          │
+│     /jeff:bdd                   → BDD-style tasks with acceptance criteria│
 │         Output: .jeff/issues/ or .jeff/TASKS.md                         │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -155,59 +108,29 @@ Jeff guides you through a product discovery workflow. Each command generates a p
 
 ### Typical Flow
 
-1. **Start a new project**: `jeff init --name "My Product"`
-2. **Define the user journey**: Run `jeff map`, work with AI to build your story map
-3. **Dig into opportunities**: Run `jeff opportunity` to create your OST
-4. **Identify risks**: Run `jeff hypothesis` to surface and plan validation for assumptions
-5. **Iterate**: As you do research, use `jeff research interview` and `jeff research insight` to capture learnings
-6. **Build**: When ready to implement, run `jeff issues` or `jeff bdd` to generate actionable tasks
+1. **Start a new project**: `/jeff:init` scaffolds `.jeff/` with templates
+2. **Define the user journey**: `/jeff:map` walks you through backbone, walking skeleton, ribs
+3. **Dig into opportunities**: `/jeff:research` to capture interviews, then `/jeff:opportunity` to build the OST
+4. **Identify risks**: `/jeff:hypothesis` to surface and plan validation for assumptions
+5. **Build**: When ready to implement, `/jeff:issues` for GitHub issues or `/jeff:bdd` for tasks with acceptance criteria
 
-Each artifact builds on the previous ones—the story map informs opportunities, opportunities inform hypotheses, and all three feed into issue generation.
+Each artifact builds on the previous ones — the story map informs opportunities, opportunities inform hypotheses, and all three feed into issue generation.
 
-## Usage
+## Project Structure
 
-```bash
-# Initialize project
-jeff init [--name PROJECT_NAME]
-
-# Story mapping workflow
-jeff map                       # Print prompt for creating/updating story map
-jeff map --show                # Display current story map
-
-# Opportunity workflow
-jeff opportunity               # Print prompt for OST creation
-jeff opportunity --show        # Display current OST
-
-# Hypothesis workflow
-jeff hypothesis                # Print prompt for hypothesis generation
-jeff hypothesis --list         # List current hypotheses
-jeff hypothesis --validate ID  # Print prompt for validation planning
-
-# Research capture
-jeff research interview        # Print prompt for interview notes
-jeff research insight          # Print prompt for insight extraction
-
-# GitHub issues
-jeff issues                    # Print prompt for generating issues from artifacts
-jeff issues --create           # Create issues directly via gh CLI
-jeff issues --dry-run          # Preview issues without creating
-```
-
-## Directory Structure
-
-After `jeff init`, your project will have:
+After `/jeff:init`, your project will have:
 
 ```
 .jeff/
 ├── config.yaml                 # Project settings
-├── prompts/                    # AI prompts for each workflow
 ├── STORY_MAP.md               # Backbone, walking skeleton, ribs
 ├── OPPORTUNITIES.md           # OST: outcome → opportunities → solutions
 ├── HYPOTHESES.md              # Assumptions, metrics, validation plans
+├── TASKS.md                   # BDD tasks with acceptance criteria
 ├── research/
-│   ├── USER_INTERVIEWS.md
-│   ├── VALIDATION_RESULTS.md
-│   └── INSIGHTS.md
+│   ├── USER_INTERVIEWS.md     # Individual interview notes
+│   ├── INSIGHTS.md            # Synthesized patterns
+│   └── VALIDATION_RESULTS.md  # Experiment outcomes
 └── issues/                    # Generated issue drafts
 ```
 

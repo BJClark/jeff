@@ -2,41 +2,60 @@
 
 ## What is Jeff?
 
-Jeff is a CLI that generates prompts for AI-assisted product discovery. Users pipe jeff's output to an LLM (via Claude, ChatGPT, etc.) and paste responses back into markdown artifacts.
+Jeff is a set of AI-assistant skills for product discovery. It combines three frameworks to help teams move from research to validated implementation:
 
-## Core Methodologies
+1. **User Story Mapping (Patton)** — Backbone (user activities) → Walking Skeleton (MVP slice) → Ribs (stories per activity)
+2. **Opportunity Solution Trees (Torres)** — Desired Outcome → Opportunities → Solutions → Experiments
+3. **Hypothesis-Driven Development (Klein)** — Assumption → Metric → Validation Method → Result
 
-Jeff combines three product discovery frameworks:
+## Available Commands
 
-1. **User Story Mapping (Patton)** - Backbone (user activities) → Walking Skeleton (MVP slice) → Ribs (stories per activity)
-2. **Opportunity Solution Trees (Torres)** - Desired Outcome → Opportunities → Solutions → Experiments
-3. **Hypothesis-Driven Development (Klein)** - Assumption → Metric → Validation Method → Result
+| Command | What it does |
+|---------|-------------|
+| `/jeff:init` | Scaffold `.jeff/` directory with artifact templates |
+| `/jeff:map` | Create or update the user story map |
+| `/jeff:opportunity` | Build an Opportunity Solution Tree |
+| `/jeff:hypothesis` | Create and track testable hypotheses |
+| `/jeff:research interview` | Capture a user interview |
+| `/jeff:research insight` | Synthesize insights across research |
+| `/jeff:bdd` | Generate BDD-style tasks with acceptance criteria |
+| `/jeff:issues` | Generate GitHub issues from artifacts |
+| `/jeff:help` | Show the command reference |
 
 ## Key Artifacts
 
-All artifacts live in `.jeff/` directory:
-- `STORY_MAP.md` - The story map structure
-- `OPPORTUNITIES.md` - The opportunity solution tree
-- `HYPOTHESES.md` - Testable assumptions with validation plans
-- `research/` - Interview notes, insights, validation results
+All artifacts live in the `.jeff/` directory:
 
-## How Commands Work
-
-Commands follow a pattern:
-- `jeff <command>` - Prints a prompt (user copies to LLM)
-- `jeff <command> --show` - Displays current artifact state
-- `jeff <command> --list` - Lists items (for hypotheses)
-
-The CLI does NOT call LLMs directly. It generates context-aware prompts that include current artifact state.
+- `STORY_MAP.md` — The story map (backbone, walking skeleton, ribs)
+- `OPPORTUNITIES.md` — The opportunity solution tree
+- `HYPOTHESES.md` — Testable assumptions with validation plans
+- `TASKS.md` — BDD-style tasks with acceptance criteria
+- `research/` — Interview notes, insights, validation results
 
 ## Architecture
 
 ```
-src/jeff/
-├── cli.py              # Typer CLI entry point
-├── config.py           # Project config management
-├── commands/           # One module per command group
-├── prompts/            # Markdown prompt templates
-├── parsers/            # Extract structured data from artifacts
-└── templates/          # Initial artifact templates for `jeff init`
+src/jeff/skills/            # Skill files (Claude Code / Cursor)
+├── jeff-init.md
+├── jeff-map.md
+├── jeff-opportunity.md
+├── jeff-hypothesis.md
+├── jeff-research.md
+├── jeff-bdd.md
+├── jeff-issues.md
+├── jeff-help.md
+└── templates/              # Artifact templates for jeff:init
+    ├── STORY_MAP.md
+    ├── OPPORTUNITIES.md
+    ├── HYPOTHESES.md
+    ├── TASKS.md
+    ├── USER_INTERVIEWS.md
+    ├── INSIGHTS.md
+    ├── VALIDATION_RESULTS.md
+    └── config.yaml
+
+commands/                   # Symlinks for Claude Code plugin
+install.sh                  # Shell installer for Claude Code and Cursor
 ```
+
+No Python dependency. Skills are self-contained markdown files with embedded instructions.

@@ -1,0 +1,10 @@
+{
+  "name": "jeff",
+  "version": "0.1.0",
+  "description": "Product discovery CLI - User Story Mapping, Opportunity Solution Trees, and Hypothesis-Driven Development",
+  "author": {
+    "name": "Will Clark"
+  },
+  "repository": "https://github.com/scidept/jeff",
+  "keywords": ["product-discovery", "story-mapping", "hypothesis", "ost"]
+}
