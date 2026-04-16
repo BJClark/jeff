@@ -5,8 +5,11 @@ set -euo pipefail
 # No Python dependency required.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKILLS_DIR="$SCRIPT_DIR/src/jeff/skills"
-TEMPLATES_DIR="$SKILLS_DIR/templates"
+COMMANDS_SRC="$SCRIPT_DIR/commands"
+SKILLS_SRC="$SCRIPT_DIR/skills"
+
+JEFF_COMMANDS=(jeff-init jeff-map jeff-opportunity jeff-hypothesis jeff-research jeff-bdd jeff-issues jeff-help)
+JEFF_SKILLS=(jeff-init jeff-map jeff-opportunity jeff-hypothesis jeff-research jeff-bdd jeff-issues jeff-help)
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -26,8 +29,8 @@ Options:
   --help      Show this help
 
 Claude Code:
-  --global    copies skills to ~/.claude/commands/
-  --local     copies skills to ./.claude/commands/
+  --global    copies wrappers to ~/.claude/commands/ and skills to ~/.claude/skills/
+  --local     copies wrappers to ./.claude/commands/ and skills to ./.claude/skills/
 
 Cursor:
   --global    copies AGENTS.md to ~/.cursor/rules/jeff.mdc
@@ -43,37 +46,70 @@ error() { echo "  ✗ $*" >&2; exit 1; }
 # ── Core functions ───────────────────────────────────────────────────────────
 
 install_claude() {
-  local target_dir="$1"
+  local claude_root="$1"
   local dry_run="$2"
+  local commands_dst="$claude_root/commands"
+  local skills_dst="$claude_root/skills"
 
-  echo "Installing jeff skills for Claude Code → $target_dir"
+  echo "Installing jeff for Claude Code → $claude_root"
+
+  if [ ! -d "$COMMANDS_SRC" ]; then
+    error "commands/ not found at $COMMANDS_SRC"
+  fi
+  if [ ! -d "$SKILLS_SRC" ]; then
+    error "skills/ not found at $SKILLS_SRC"
+  fi
 
   if [[ "$dry_run" == "true" ]]; then
-    echo "  (dry-run) Would create: $target_dir"
-    for f in "$SKILLS_DIR"/jeff-*.md; do
-      echo "  (dry-run) Would copy: $(basename "$f")"
+    echo "  (dry-run) Would create: $commands_dst"
+    for name in "${JEFF_COMMANDS[@]}"; do
+      if [ -f "$COMMANDS_SRC/$name.md" ]; then
+        echo "  (dry-run) Would copy: commands/$name.md → $commands_dst/$name.md"
+      fi
+    done
+    echo "  (dry-run) Would create: $skills_dst"
+    for name in "${JEFF_SKILLS[@]}"; do
+      if [ -d "$SKILLS_SRC/$name" ]; then
+        echo "  (dry-run) Would copy: skills/$name/ → $skills_dst/$name/"
+      fi
     done
     return
   fi
 
-  mkdir -p "$target_dir"
+  mkdir -p "$commands_dst"
+  mkdir -p "$skills_dst"
 
-  local count=0
-  for f in "$SKILLS_DIR"/jeff-*.md; do
-    [ -f "$f" ] || continue
-    local name
-    name=$(basename "$f")
+  # Copy command wrappers
+  local cmd_count=0
+  for name in "${JEFF_COMMANDS[@]}"; do
+    local src="$COMMANDS_SRC/$name.md"
+    [ -f "$src" ] || { warn "missing commands/$name.md — skipped"; continue; }
+    local dst="$commands_dst/$name.md"
     # Back up existing file if present and different
-    if [ -f "$target_dir/$name" ]; then
-      if ! diff -q "$f" "$target_dir/$name" >/dev/null 2>&1; then
-        cp "$target_dir/$name" "$target_dir/$name.bak"
-      fi
+    if [ -f "$dst" ] && ! diff -q "$src" "$dst" >/dev/null 2>&1; then
+      cp "$dst" "$dst.bak"
     fi
-    cp "$f" "$target_dir/$name"
-    count=$((count + 1))
+    cp "$src" "$dst"
+    cmd_count=$((cmd_count + 1))
   done
+  info "Installed $cmd_count command wrappers → $commands_dst"
 
-  info "Installed $count skill files"
+  # Copy skill folders (SKILL.md + references/ + examples/ + templates/)
+  local skill_count=0
+  for name in "${JEFF_SKILLS[@]}"; do
+    local src="$SKILLS_SRC/$name"
+    [ -d "$src" ] || { warn "missing skills/$name/ — skipped"; continue; }
+    local dst="$skills_dst/$name"
+    # Back up existing folder if present and different
+    if [ -d "$dst" ] && ! diff -rq "$src" "$dst" >/dev/null 2>&1; then
+      rm -rf "$dst.bak"
+      cp -R "$dst" "$dst.bak"
+    fi
+    rm -rf "$dst"
+    cp -R "$src" "$dst"
+    skill_count=$((skill_count + 1))
+  done
+  info "Installed $skill_count skill folders → $skills_dst"
 }
 
 install_cursor() {
@@ -109,33 +145,50 @@ install_cursor() {
 }
 
 uninstall_claude() {
-  local target_dir="$1"
+  local claude_root="$1"
   local dry_run="$2"
+  local commands_dst="$claude_root/commands"
+  local skills_dst="$claude_root/skills"
 
-  echo "Uninstalling jeff skills from Claude Code ← $target_dir"
+  echo "Uninstalling jeff from Claude Code ← $claude_root"
 
-  if [ ! -d "$target_dir" ]; then
-    warn "Nothing to uninstall — $target_dir does not exist"
+  if [ ! -d "$claude_root" ]; then
+    warn "Nothing to uninstall — $claude_root does not exist"
     return
   fi
 
-  local count=0
-  for f in "$target_dir"/jeff-*.md; do
+  # Remove command wrappers — only the ones we own
+  local cmd_count=0
+  for name in "${JEFF_COMMANDS[@]}"; do
+    local f="$commands_dst/$name.md"
     [ -f "$f" ] || continue
     if [[ "$dry_run" == "true" ]]; then
-      echo "  (dry-run) Would remove: $(basename "$f")"
+      echo "  (dry-run) Would remove: $f"
     else
       rm "$f"
-      # Also remove backup if present
       [ -f "$f.bak" ] && rm "$f.bak"
     fi
-    count=$((count + 1))
+    cmd_count=$((cmd_count + 1))
   done
 
-  if [ "$count" -eq 0 ]; then
-    warn "No jeff skill files found in $target_dir"
+  # Remove skill folders — only the ones we own
+  local skill_count=0
+  for name in "${JEFF_SKILLS[@]}"; do
+    local d="$skills_dst/$name"
+    [ -d "$d" ] || continue
+    if [[ "$dry_run" == "true" ]]; then
+      echo "  (dry-run) Would remove: $d/"
+    else
+      rm -rf "$d"
+      [ -d "$d.bak" ] && rm -rf "$d.bak"
+    fi
+    skill_count=$((skill_count + 1))
+  done
+
+  if [ "$cmd_count" -eq 0 ] && [ "$skill_count" -eq 0 ]; then
+    warn "No jeff files found under $claude_root"
   else
-    info "Removed $count skill files"
+    info "Removed $cmd_count command wrappers and $skill_count skill folders"
   fi
 }
 
@@ -186,13 +239,12 @@ fi
 
 resolve_claude_dir() {
   if [[ "$SCOPE" == "global" ]]; then
-    local dir="$HOME/.claude/commands"
     if [ ! -d "$HOME/.claude" ]; then
       error "~/.claude/ does not exist. Install Claude Code first: https://docs.anthropic.com/en/docs/claude-code"
     fi
-    echo "$dir"
+    echo "$HOME/.claude"
   else
-    echo ".claude/commands"
+    echo ".claude"
   fi
 }
 

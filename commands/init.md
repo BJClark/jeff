@@ -1,1 +1,0 @@
-../src/jeff/skills/jeff-init.md

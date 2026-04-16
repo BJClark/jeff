@@ -22,7 +22,7 @@ git clone https://github.com/BJClark/jeff ~/tools/jeff
 cd ~/tools/jeff && ./install.sh --claude --global
 ```
 
-This copies skill files to `~/.claude/commands/` so they're available in every Claude Code session.
+This copies the thin command wrappers to `~/.claude/commands/` and the Agent Skill folders (SKILL.md plus `references/`, `examples/`, and `templates/`) to `~/.claude/skills/` so they're available in every Claude Code session.
 
 ### Option 3: Install into a Specific Project
 
@@ -133,6 +133,30 @@ After `/jeff:init`, your project will have:
 │   └── VALIDATION_RESULTS.md  # Experiment outcomes
 └── issues/                    # Generated issue drafts
 ```
+
+## Skill Anatomy
+
+jeff ships as Claude Agent Skills with progressive disclosure. Every skill lives in its own folder under `skills/`:
+
+```
+skills/jeff-<name>/
+├── SKILL.md                    # The active workflow (kept under 5,000 words)
+├── references/                 # Loaded on demand from SKILL.md
+│   ├── methodology.md          # Framework theory (Patton / Torres / Klein)
+│   ├── troubleshooting.md      # Symptom → fix pairs
+│   └── edge-cases.md           # Anti-patterns and redirects
+└── examples/                   # Worked conversations, one scenario per file
+    ├── golden-path.md
+    └── tricky-case.md
+```
+
+- **Frontmatter** (always loaded) — name, description, allowed-tools; tells Claude when to activate the skill.
+- **SKILL.md body** (loaded on match) — the trigger list, inputs, numbered workflow, output contract, and pointers to companion files.
+- **`references/` and `examples/`** (loaded on demand) — heavy context that only materialises when the workflow explicitly reads it.
+
+Thin wrappers in `commands/<name>.md` expose each skill as a `/jeff:<name>` slash command. The wrapper's only job is to call the skill; everything else lives under `skills/`.
+
+See [AGENTS.md](AGENTS.md) for the full architecture diagram.
 
 ## Methodology Sources
 

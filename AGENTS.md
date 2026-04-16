@@ -34,28 +34,61 @@ All artifacts live in the `.jeff/` directory:
 
 ## Architecture
 
-```
-src/jeff/skills/            # Skill files (Claude Code / Cursor)
-├── jeff-init.md
-├── jeff-map.md
-├── jeff-opportunity.md
-├── jeff-hypothesis.md
-├── jeff-research.md
-├── jeff-bdd.md
-├── jeff-issues.md
-├── jeff-help.md
-└── templates/              # Artifact templates for jeff:init
-    ├── STORY_MAP.md
-    ├── OPPORTUNITIES.md
-    ├── HYPOTHESES.md
-    ├── TASKS.md
-    ├── USER_INTERVIEWS.md
-    ├── INSIGHTS.md
-    ├── VALIDATION_RESULTS.md
-    └── config.yaml
+Jeff follows the Claude Agent Skills layout with progressive disclosure. Each skill is a folder containing a slim `SKILL.md` (the active workflow) plus `references/` and `examples/` that are loaded on demand.
 
-commands/                   # Symlinks for Claude Code plugin
-install.sh                  # Shell installer for Claude Code and Cursor
+```
+commands/                       # Thin slash-command wrappers — invoke the matching skill
+├── init.md
+├── map.md
+├── opportunity.md
+├── hypothesis.md
+├── research.md
+├── bdd.md
+├── issues.md
+└── help.md
+
+skills/                         # Canonical Agent Skills
+├── jeff-init/
+│   ├── SKILL.md
+│   ├── references/             # troubleshooting, edge cases
+│   ├── examples/               # worked scenarios
+│   └── templates/              # artifact scaffolds copied into .jeff/
+├── jeff-map/
+│   ├── SKILL.md
+│   ├── references/             # methodology (Patton), troubleshooting, edge cases
+│   └── examples/
+├── jeff-opportunity/
+│   ├── SKILL.md
+│   ├── references/             # methodology (Torres), experiment-methods, …
+│   └── examples/
+├── jeff-hypothesis/
+│   ├── SKILL.md
+│   ├── references/             # methodology (Klein), validation-methods, …
+│   └── examples/
+├── jeff-research/
+│   ├── SKILL.md
+│   ├── references/             # interview-protocol, insight-formula, …
+│   └── examples/
+├── jeff-bdd/
+│   ├── SKILL.md
+│   ├── references/             # acceptance-criteria, task-template, …
+│   └── examples/
+├── jeff-issues/
+│   ├── SKILL.md
+│   ├── references/             # issue-template, gh-cli-setup, …
+│   └── examples/
+└── jeff-help/
+    ├── SKILL.md
+    └── references/workflow-overview.md
+
+.claude-plugin/plugin.json      # Plugin manifest (commands + skills)
+install.sh                      # Shell installer for Claude Code and Cursor
 ```
 
-No Python dependency. Skills are self-contained markdown files with embedded instructions.
+### Progressive disclosure
+
+- **Frontmatter** — always loaded into the skill index; used by Claude to decide when to activate a skill.
+- **SKILL.md body** — loaded when the skill activates; contains only the active workflow.
+- **`references/` and `examples/`** — loaded on demand when SKILL.md explicitly points to them. Methodology, troubleshooting, edge cases, and worked scenarios live here so the base skill stays under the 5,000-word budget.
+
+No Python dependency. Skills are self-contained markdown with embedded instructions.

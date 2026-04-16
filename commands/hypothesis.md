@@ -1,1 +1,0 @@
-../src/jeff/skills/jeff-hypothesis.md

@@ -1,1 +1,0 @@
-../src/jeff/skills/jeff-opportunity.md
