@@ -1,0 +1,18 @@
+{
+  "name": "jeff",
+  "owner": {
+    "name": "Will Clark",
+    "url": "https://github.com/BJClark"
+  },
+  "plugins": [
+    {
+      "name": "jeff",
+      "source": ".",
+      "description": "Product discovery skills — User Story Mapping (Patton), Opportunity Solution Trees (Torres), Hypothesis-Driven Development (Klein). Eight /jeff:* commands scaffold, map, discover, validate, and ship discovery artifacts.",
+      "version": "0.3.0",
+      "category": "workflow",
+      "tags": ["product-discovery", "story-mapping", "ost", "hypothesis"],
+      "strict": true
+    }
+  ]
+}

@@ -2,55 +2,46 @@
 
 A set of AI-assistant skills for product discovery, combining **User Story Mapping** (Patton), **Opportunity Solution Trees** (Torres), and **Hypothesis-Driven Development** (Klein).
 
-No Python dependency — jeff is a collection of skill files that plug directly into Claude Code, Cursor, or any AI assistant that reads markdown context.
+Distributed as a **Claude Code plugin**. No Python, no build step — jeff is a set of markdown skills that plug directly into Claude Code (via the plugin system) or Cursor (via a rules file).
 
 ## Installation
 
-### Option 1: Claude Code Plugin (Recommended)
+### Claude Code (Recommended): install as a plugin
+
+```bash
+claude plugin marketplace add BJClark/jeff
+claude plugin install jeff@jeff
+```
+
+All `/jeff:*` commands appear immediately. To uninstall: `claude plugin uninstall jeff@jeff`.
+
+### Claude Code: try without installing
 
 ```bash
 git clone https://github.com/BJClark/jeff ~/tools/jeff
 claude --plugin-dir ~/tools/jeff
 ```
 
-This loads jeff as a plugin — all `/jeff:*` commands are available immediately.
+Loads jeff for the current session only — useful for evaluating before committing.
 
-### Option 2: Install Skills Globally into Claude Code
+### Cursor: global or per-project
 
 ```bash
 git clone https://github.com/BJClark/jeff ~/tools/jeff
-cd ~/tools/jeff && ./install.sh --claude --global
-```
 
-This copies the thin command wrappers to `~/.claude/commands/` and the Agent Skill folders (SKILL.md plus `references/`, `examples/`, and `templates/`) to `~/.claude/skills/` so they're available in every Claude Code session.
-
-### Option 3: Install into a Specific Project
-
-```bash
-# Claude Code (local to this project)
-~/tools/jeff/install.sh --claude --local
-
-# Cursor (local to this project)
-~/tools/jeff/install.sh --cursor --local
-
-# Both
-~/tools/jeff/install.sh --all --local
-```
-
-### Option 4: Cursor System-Wide
-
-```bash
+# System-wide (~/.cursor/rules/)
 ~/tools/jeff/install.sh --cursor --global
+
+# Project-local (./.cursor/rules/)
+~/tools/jeff/install.sh --cursor --local
 ```
 
-This creates `~/.cursor/rules/jeff.mdc` so jeff context is available in every Cursor project.
+Cursor isn't plugin-aware, so `install.sh` writes a set of `.mdc` rule files:
 
-### Uninstall
+- `jeff.mdc` — always-on umbrella rule (command reference + workflow overview).
+- `jeff-init.mdc`, `jeff-map.mdc`, `jeff-opportunity.mdc`, `jeff-hypothesis.mdc`, `jeff-research.mdc`, `jeff-bdd.mdc`, `jeff-issues.mdc`, `jeff-help.mdc` — one on-demand rule per skill, each carrying its own description so Cursor loads it only when relevant. The `jeff-` prefix lives in the filename (not in the repo) so Cursor rules stay namespaced without polluting the plugin's skill names.
 
-```bash
-./install.sh --uninstall --claude --global
-./install.sh --uninstall --cursor --global
-```
+Uninstall: `~/tools/jeff/install.sh --uninstall --cursor --global` removes `jeff.mdc` and every `jeff-*.mdc`.
 
 ## Slash Commands
 
@@ -139,7 +130,7 @@ After `/jeff:init`, your project will have:
 jeff ships as Claude Agent Skills with progressive disclosure. Every skill lives in its own folder under `skills/`:
 
 ```
-skills/jeff-<name>/
+skills/<name>/
 ├── SKILL.md                    # The active workflow (kept under 5,000 words)
 ├── references/                 # Loaded on demand from SKILL.md
 │   ├── methodology.md          # Framework theory (Patton / Torres / Klein)
@@ -154,7 +145,7 @@ skills/jeff-<name>/
 - **SKILL.md body** (loaded on match) — the trigger list, inputs, numbered workflow, output contract, and pointers to companion files.
 - **`references/` and `examples/`** (loaded on demand) — heavy context that only materialises when the workflow explicitly reads it.
 
-Thin wrappers in `commands/<name>.md` expose each skill as a `/jeff:<name>` slash command. The wrapper's only job is to call the skill; everything else lives under `skills/`.
+Thin wrappers in `commands/<name>.md` expose each skill as a `/jeff:<name>` slash command (the `jeff:` prefix comes from the plugin name in `.claude-plugin/plugin.json`). The wrapper's only job is to invoke the matching skill; everything else lives under `skills/`.
 
 See [AGENTS.md](AGENTS.md) for the full architecture diagram.
 

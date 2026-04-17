@@ -37,9 +37,13 @@ All artifacts live in the `.jeff/` directory:
 Jeff follows the Claude Agent Skills layout with progressive disclosure. Each skill is a folder containing a slim `SKILL.md` (the active workflow) plus `references/` and `examples/` that are loaded on demand.
 
 ```
+.claude-plugin/
+├── plugin.json                 # Plugin manifest (name: "jeff", points at commands/ and skills/)
+└── marketplace.json            # Marketplace entry so `claude plugin install jeff@jeff` works
+
 commands/                       # Thin slash-command wrappers — invoke the matching skill
-├── init.md
-├── map.md
+├── init.md                     # → /jeff:init
+├── map.md                      # → /jeff:map
 ├── opportunity.md
 ├── hypothesis.md
 ├── research.md
@@ -47,42 +51,41 @@ commands/                       # Thin slash-command wrappers — invoke the mat
 ├── issues.md
 └── help.md
 
-skills/                         # Canonical Agent Skills
-├── jeff-init/
+skills/                         # Canonical Agent Skills (plugin-namespaced as jeff:<name>)
+├── init/
 │   ├── SKILL.md
 │   ├── references/             # troubleshooting, edge cases
 │   ├── examples/               # worked scenarios
 │   └── templates/              # artifact scaffolds copied into .jeff/
-├── jeff-map/
+├── map/
 │   ├── SKILL.md
 │   ├── references/             # methodology (Patton), troubleshooting, edge cases
 │   └── examples/
-├── jeff-opportunity/
+├── opportunity/
 │   ├── SKILL.md
 │   ├── references/             # methodology (Torres), experiment-methods, …
 │   └── examples/
-├── jeff-hypothesis/
+├── hypothesis/
 │   ├── SKILL.md
 │   ├── references/             # methodology (Klein), validation-methods, …
 │   └── examples/
-├── jeff-research/
+├── research/
 │   ├── SKILL.md
 │   ├── references/             # interview-protocol, insight-formula, …
 │   └── examples/
-├── jeff-bdd/
+├── bdd/
 │   ├── SKILL.md
 │   ├── references/             # acceptance-criteria, task-template, …
 │   └── examples/
-├── jeff-issues/
+├── issues/
 │   ├── SKILL.md
 │   ├── references/             # issue-template, gh-cli-setup, …
 │   └── examples/
-└── jeff-help/
+└── help/
     ├── SKILL.md
     └── references/workflow-overview.md
 
-.claude-plugin/plugin.json      # Plugin manifest (commands + skills)
-install.sh                      # Shell installer for Claude Code and Cursor
+install.sh                      # Shell installer for Cursor (Claude Code uses the plugin flow)
 ```
 
 ### Progressive disclosure
