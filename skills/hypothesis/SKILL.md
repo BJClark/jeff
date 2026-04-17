@@ -35,6 +35,11 @@ allowed-tools:
    - **Threshold.** "What result means 'yes this worked'? What means 'no'?" If the user can't name a result that would *disprove* the hypothesis, it isn't falsifiable yet — push back.
    - **Risk level.** H / M / L. Drives the validation method.
    - **Validation method.** Pick the *lightest* method that actually tests the assumption. See `references/validation-methods.md`.
+   - **Experiment plan.** Explicit instructions for *how to actually run this*. Capture:
+     - **Setup** — what to build/configure (variant spec, instrumentation to add, cohort filter, feature flag).
+     - **Run conditions** — sample size or duration, traffic allocation, stop criteria (e.g. "run until 5k signups per arm or 14 days, whichever first").
+     - **Measurement** — where the metric is read (dashboard, query, tool) and how results get pulled for the update step.
+     If any of these can't be answered, the hypothesis isn't ready to run — flag the gap (e.g. "instrumentation missing") as a prerequisite task rather than recording a vague plan.
 
 4. **Update an existing hypothesis.** When an experiment completes, capture:
    - **Status.** `Validated` / `Invalidated` / `Inconclusive`.

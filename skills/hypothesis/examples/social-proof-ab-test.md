@@ -33,6 +33,15 @@
 >
 > Recording as **H3**, status **Untested**, linked to O4."
 
+**Claude's turn 5:** Pin down *how to run it* before writing the entry.
+
+> "Before I record this, let's spell out the run plan so whoever picks it up can execute without guessing:
+> - **Setup** — logo strip (6 customer logos, grayscale) above pricing table, behind `pricing_social_proof` flag, 50/50 split on first-time paid-traffic visitors. Amplitude event `pricing_page_viewed` already exists; confirm `signup_completed` fires with `experiment_arm` property.
+> - **Run conditions** — 50/50 traffic, run until 5,000 signups per arm or 14 days, whichever first. Stop early only if p < 0.01 against the treatment (guardrail against shipping a loss).
+> - **Measurement** — Amplitude funnel `pricing_page_viewed → signup_completed`, segmented by `experiment_arm`, paid-traffic cohort only. Pull at stop; record both arms' conversion and the lift.
+>
+> That looks runnable. Writing it up."
+
 **Claude writes to `.jeff/HYPOTHESES.md`:**
 
 ```markdown
@@ -43,6 +52,10 @@
 - **Threshold**: +15% lift, p < 0.05
 - **Risk**: M (feature-level, easily reverted)
 - **Method**: A/B test
+- **Experiment plan**:
+  - **Setup**: grayscale customer-logo strip above pricing table, behind `pricing_social_proof` flag. Confirm `signup_completed` event carries `experiment_arm` property before launch.
+  - **Run conditions**: 50/50 split on first-time paid-traffic visitors. Stop at 5,000 signups per arm or 14 days, whichever first. Early-stop only if treatment is losing at p < 0.01.
+  - **Measurement**: Amplitude funnel `pricing_page_viewed → signup_completed`, segmented by `experiment_arm`, paid-traffic cohort. Pull conversion and lift for both arms at stop.
 - **Status**: Untested
 ```
 
