@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "jeff",
-      "source": ".",
+      "source": "./",
       "description": "Product discovery skills — User Story Mapping (Patton), Opportunity Solution Trees (Torres), Hypothesis-Driven Development (Klein). Eight /jeff:* commands scaffold, map, discover, validate, and ship discovery artifacts.",
       "version": "0.3.0",
       "category": "workflow",
